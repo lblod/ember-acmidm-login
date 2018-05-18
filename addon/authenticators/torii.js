@@ -1,6 +1,4 @@
-import { debug, warn } from '@ember/debug';
 import { inject as service } from '@ember/service';
-import config from '../config/environment';
 import ToriiAuthenticator from 'ember-simple-auth/authenticators/torii';
 
 /**
@@ -13,28 +11,33 @@ export default ToriiAuthenticator.extend({
   basePath: 'sessions',
   toriiProvider: 'acmidm-oauth2',
 
-  async authenticate() {
-    const data = await this._super(...arguments); // get authorization code through Torii
-    const session = await this.ajax.request(this.basePath, {
-      type: 'POST',
-      dataType: 'json',
-      contentType: 'application/json',
-      data: JSON.stringify({
-        authorizationCode: data.authorizationCode
-      })
+  authenticate() {
+    return this._super(...arguments).then((data) => { // get authorization code through Torii
+      return this.ajax.request(this.basePath, {
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/vnd.api+json',
+        data: JSON.stringify({
+          authorizationCode: data.authorizationCode
+        })
+      }).then((response) => {
+        response.provider = this.get('toriiProvider'); // required to make session restore work
+        return response;
+      });
     });
-    return session;
   },
 
-  async invalidate() {
-    const path = `${this.basePath}/current`;
-    const session = await this.ajax.del(path);
-    return session;
+  invalidate() {
+    return this._super(...arguments).then( () => {
+      const path = `${this.basePath}/current`;
+      return this.ajax.del(path);
+    });
   },
 
-  async restore() {
-    const path = `${this.basePath}/current`;
-    const session = await this.ajax.request(path);
-    return session;
+  restore() {
+    return this._super(...arguments).then( () => {
+      const path = `${this.basePath}/current`;
+      return this.ajax.request(path);
+    });
   }
 });
