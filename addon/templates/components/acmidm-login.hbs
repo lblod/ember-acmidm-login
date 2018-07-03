@@ -1,6 +1,4 @@
 {{#wu-button class="button--large u-spacer" onClick=(action "login")}}Meld u aan{{/wu-button}}
 {{#if errorMessage}}
-	<div class="alert alert--error">
-	  {{errorMessage}}
-	</div>
+  {{wu-alert title=errorMessage isError=true}}
 {{/if}}
