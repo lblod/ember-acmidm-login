@@ -1,5 +1,6 @@
 import Oauth2 from 'torii/providers/oauth2-code';
 import { configurable } from 'torii/configuration';
+import { merge } from '@ember/polyfills';
 
 /**
  * This class implements authentication against ACM/IDM
@@ -18,5 +19,11 @@ export default Oauth2.extend({
 
   redirectUri: configurable('redirectUri', function() {
     return this._super();
-  })
+  }),
+
+  open(options) {
+    console.log(options);
+    merge(options, {resizable: true,scrollbars: true});
+    return this._super(options);
+  }
 });
