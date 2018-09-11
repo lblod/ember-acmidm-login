@@ -22,7 +22,6 @@ export default Oauth2.extend({
   }),
 
   open(options) {
-    console.log(options);
     merge(options, {resizable: true,scrollbars: true});
     return this._super(options);
   }
