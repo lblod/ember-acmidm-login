@@ -20,7 +20,7 @@ torii: {
   disableRedirectInitializer: true,
   providers: {
     'acmidm-oauth2': {
-      apiKey: 'your-key'
+      apiKey: 'your-key',
       baseUrl: 'https://authenticatie-ti.vlaanderen.be/op/v1/auth',
       scope: 'openid rrn vo profile',
       redirectUri: 'https://loket.lblod.info/authorization/callback',
