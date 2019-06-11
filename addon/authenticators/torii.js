@@ -29,14 +29,14 @@ export default ToriiAuthenticator.extend({
 
   invalidate() {
     return this._super(...arguments).then( () => {
-      const path = `${this.basePath}/current`;
+      const path = `/${this.basePath}/current`;
       return this.ajax.del(path);
     });
   },
 
   restore() {
     return this._super(...arguments).then( () => {
-      const path = `${this.basePath}/current`;
+      const path = `/${this.basePath}/current`;
       return this.ajax.request(path);
     });
   }
