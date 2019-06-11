@@ -1,6 +1,6 @@
 {
   "name": "@lblod/ember-acmidm-login",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Ember addon with a login and logout component for ACM/IDM",
   "keywords": [
     "ember-addon"
