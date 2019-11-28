@@ -32,7 +32,8 @@ torii: {
       baseUrl: 'https://authenticatie-ti.vlaanderen.be/op/v1/auth',
       scope: 'openid rrn vo profile',
       redirectUri: 'https://loket.lblod.info/authorization/callback',
-      logoutUrl: 'https://authenticatie-ti.vlaanderen.be/op/v1/logout'
+      logoutUrl: 'https://authenticatie-ti.vlaanderen.be/op/v1/logout',
+      switchUrl: 'https://loket.lblod.info/switch-login' //optional
     }
   }
 }
@@ -56,6 +57,28 @@ export default Route.extend(ApplicationRouteMixin, {
   }
 }
 ```
+
+To support switching without doing a full logout, set the appriopriate switchUrl in the torii configuration, add a `{{acmidm-switch}}` component and set up a switch route. This route should trigger a login, for example:
+
+```javascript
+import UnauthenticatedRouteMixin from 'ember-simple-auth/mixins/unauthenticated-route-mixin';
+import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
+export default Route.extend(UnauthenticatedRouteMixin, {
+  session: service(),
+  async model() {
+    try {
+      await this.session.authenticate('authenticator:torii', 'acmidm-oauth2');
+    }
+    catch(e) {
+      return 'Fout bij het aanmelden. Gelieve opnieuwe te proberen.';
+    }
+  }
+});
+```
+
+Note that this url should be registered with acm/idm
+
 Contributing
 ------------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 {
   "name": "@lblod/ember-acmidm-login",
-  "version": "0.1.6",
+  "version": "0.2.1",
   "description": "Ember addon with a login and logout component for ACM/IDM",
   "keywords": [
     "ember-addon"
@@ -24,7 +24,7 @@
     "ember-cli-babel": "^7.1.2",
     "ember-cli-htmlbars": "^3.0.0",
     "ember-cli-htmlbars-inline-precompile": "^1.0.0",
-    "ember-simple-auth": "^1.8.2",
+    "ember-simple-auth": "^1.9.2",
     "torii": "^0.10.1"
   },
   "devDependencies": {
