@@ -25,7 +25,7 @@ export default ToriiAuthenticator.extend({
 
     if (result.ok) {
       const response = result.json();
-      response.provider = this.get('toriiProvider'); // required to make session restore work
+      response.provider = this.toriiProvider; // required to make session restore work
       return response;
     } else {
       throw result;
