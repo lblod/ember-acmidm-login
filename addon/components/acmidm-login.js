@@ -9,6 +9,7 @@ export default Component.extend({
   actions: {
     login() {
       this.set('errorMessage', '');
+      this.set('isAuthenticating', true);
       this.session.authenticate('authenticator:torii', 'acmidm-oauth2').catch((reason) => {
         warn(reason.error || reason, { id: 'authentication.failure' });
 
@@ -16,6 +17,9 @@ export default Component.extend({
           this.set('errorMessage', 'U heeft geen toegang tot deze applicatie.');
         else
           this.set('errorMessage', 'Fout bij het aanmelden. Gelieve opnieuw te proberen.');
+      })
+      .finally(() => {
+        this.set('isAuthenticating', false);
       });
     }
   }
