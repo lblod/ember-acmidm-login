@@ -1,4 +1,7 @@
-{{#wu-button class="button--large u-spacer" onClick=(action "login")}}Meld u aan{{/wu-button}}
+{{#wu-button class="button--large u-spacer" disabled=isAuthenticating onClick=(action "login")}}Meld u aan{{/wu-button}}
+{{#if isAuthenticating}}
+  {{wu-loader}}
+{{/if}}
 {{#if errorMessage}}
   {{wu-alert title=errorMessage isError=true}}
 {{/if}}
