@@ -17,7 +17,8 @@ export default Component.extend({
   async click() {
       this.set('disabled', true);
       await fetch('/sessions/current', {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'same-origin'
       });
       window.location.replace(`${this.logoutUrl}?switch=true&client_id=${this.clientId}&post_logout_redirect_uri=${encodeURIComponent(this.returnUrl)}`);
   }
