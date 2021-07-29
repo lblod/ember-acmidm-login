@@ -1,0 +1,7 @@
+<button ...attributes {{on "click" this.switch}} disabled={{this.disabled}}>
+  {{#if (has-block)}}
+  {{yield}}
+{{else}}
+  Wissel van bestuurseenheid
+{{/if}}
+</button>

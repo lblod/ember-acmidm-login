@@ -1,12 +1,12 @@
-import Component from '@ember/component';
-import layout from '../templates/components/acmidm-logout';
+import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  layout,
-  tagName: 'button',
-  session: service('session'),
-  click() {
+export default class AcmIdmLogoutComponent extends Component {
+  @service session;
+
+  @action
+  logout() {
     this.session.invalidate();
   }
-});
+}

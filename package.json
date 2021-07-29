@@ -29,15 +29,19 @@
     "ember-cli-babel": "^7.26.6",
     "ember-cli-htmlbars": "^5.7.1",
     "ember-simple-auth": "^3.0.0",
+    "@glimmer/component": "^1.0.4",
+    "@glimmer/tracking": "^1.0.4",
+    "ember-fetch": "^8.1.0",
     "torii": "^0.10.1"
   },
+  "peerDependencies": {
+    "@appuniversum/ember-appuniversum": ">= 0.4.0"
+  },
   "devDependencies": {
+    "@appuniversum/ember-appuniversum": "^0.4.8",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^2.2.5",
     "@embroider/test-setup": "^0.41.0",
-    "@glimmer/component": "^1.0.4",
-    "@glimmer/tracking": "^1.0.4",
-    "@lblod/ember-vo-webuniversum": "^0.19.2",
     "babel-eslint": "^10.1.0",
     "broccoli-asset-rev": "^3.0.0",
     "ember-auto-import": "^1.11.3",

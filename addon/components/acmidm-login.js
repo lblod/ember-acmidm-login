@@ -1,26 +1,29 @@
 import { warn } from '@ember/debug';
-import Component from '@ember/component';
-import layout from '../templates/components/acmidm-login';
+import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
+import { tracked } from '@glimmer/tracking';
+import { action } from '@ember/object';
 
-export default Component.extend({
-  layout,
-  session: service('session'),
-  actions: {
-    login() {
-      this.set('errorMessage', '');
-      this.set('isAuthenticating', true);
-      this.session.authenticate('authenticator:torii', 'acmidm-oauth2').catch((reason) => {
+export default class AcmIdmLoginComponent extends Component {
+  @tracked errorMessage = "";
+  @tracked isAuthenticating = false;
+  @service session;
+
+  @action
+  login() {
+    this.errorMessage = "";
+    this.isAuthenticating = true;
+    this.session.authenticate('authenticator:torii', 'acmidm-oauth2')
+      .catch(reason => {
         warn(reason.error || reason, { id: 'authentication.failure' });
 
         if (reason.status == 403)
-          this.set('errorMessage', 'U heeft geen toegang tot deze applicatie.');
+          this.errorMessage = 'U heeft geen toegang tot deze applicatie.';
         else
-          this.set('errorMessage', 'Fout bij het aanmelden. Gelieve opnieuw te proberen.');
+          this.errorMessage = 'Fout bij het aanmelden. Gelieve opnieuw te proberen.';
       })
       .finally(() => {
-        this.set('isAuthenticating', false);
+        this.isAuthenticating = false;
       });
-    }
   }
-});
+}
