@@ -1,4 +1,4 @@
-<button ...attributes {{on "click" this.switch}} disabled={{this.disabled}}>
+<button ...attributes disabled={{this.disabled}} type="button" {{on "click" this.switch}}>
   {{#if (has-block)}}
   {{yield}}
 {{else}}

@@ -5,22 +5,24 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
 export default class AcmIdmLoginComponent extends Component {
-  @tracked errorMessage = "";
+  @tracked errorMessage = '';
   @tracked isAuthenticating = false;
   @service session;
 
   @action
   login() {
-    this.errorMessage = "";
+    this.errorMessage = '';
     this.isAuthenticating = true;
-    this.session.authenticate('authenticator:torii', 'acmidm-oauth2')
-      .catch(reason => {
+    this.session
+      .authenticate('authenticator:torii', 'acmidm-oauth2')
+      .catch((reason) => {
         warn(reason.error || reason, { id: 'authentication.failure' });
 
         if (reason.status == 403)
           this.errorMessage = 'U heeft geen toegang tot deze applicatie.';
         else
-          this.errorMessage = 'Fout bij het aanmelden. Gelieve opnieuw te proberen.';
+          this.errorMessage =
+            'Fout bij het aanmelden. Gelieve opnieuw te proberen.';
       })
       .finally(() => {
         this.isAuthenticating = false;

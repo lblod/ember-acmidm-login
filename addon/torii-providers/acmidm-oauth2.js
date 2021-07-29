@@ -11,18 +11,23 @@ export default Oauth2.extend({
 
   baseUrl: configurable('baseUrl'),
 
-  requiredUrlParams: Object.freeze(['response_type', 'client_id', 'redirect_uri', 'state']),
+  requiredUrlParams: Object.freeze([
+    'response_type',
+    'client_id',
+    'redirect_uri',
+    'state',
+  ]),
   optionalUrlParams: Object.freeze(['scope']),
   responseParams: Object.freeze(['code']),
 
   scope: configurable('scope', 'openid'),
 
-  redirectUri: configurable('redirectUri', function() {
+  redirectUri: configurable('redirectUri', function () {
     return this._super();
   }),
 
   open(options) {
-    merge(options, {resizable: true,scrollbars: true});
+    merge(options, { resizable: true, scrollbars: true });
     return this._super(options);
-  }
+  },
 });
