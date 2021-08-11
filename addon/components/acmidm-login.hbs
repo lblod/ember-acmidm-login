@@ -1,6 +1,12 @@
-<AuButton @loading={{this.isAuthenticating}} @disabled={{this.isAuthenticating}} {{on "click" this.login}}>
-  Meld u aan
-</AuButton>
-{{#if this.errorMessage}}
-  <AuAlert @alertIcon="alert-triangle" @alertTitle={{this.errorMessage}} />
-{{/if}}
+<Acmidm::Login as |acmidm|>
+  <AuButton
+    @loading={{acmidm.isAuthenticating}}
+    @disabled={{acmidm.isAuthenticating}}
+    {{on "click" acmidm.login}}
+  >
+    Meld u aan
+  </AuButton>
+  {{#if acmidm.errorMessage}}
+    <AuAlert @alertIcon="alert-triangle" @alertTitle={{acmidm.errorMessage}} />
+  {{/if}}
+</Acmidm::Login>
