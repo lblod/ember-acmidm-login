@@ -8,11 +8,11 @@ const toriiProvider = 'acmidm-oauth2';
 /**
  * ACM/IDM OAuth2 authenticator
  */
-export default ToriiAuthenticator.extend({
-  torii: service(),
+export default class AcmIdmOAuth2Authenticator extends ToriiAuthenticator {
+  @service torii;
 
   async authenticate() {
-    const data = await this._super(...arguments); // get authorization code through Torii
+    const data = await super.authenticate(...arguments); // get authorization code through Torii
     const result = await fetch(basePath, {
       method: 'POST',
       headers: new Headers({
@@ -30,7 +30,7 @@ export default ToriiAuthenticator.extend({
     } else {
       throw result;
     }
-  },
+  }
 
   async invalidate() {
     const result = await fetch(`${basePath}/current`, {
@@ -42,10 +42,10 @@ export default ToriiAuthenticator.extend({
 
     if (result.ok) return result;
     else throw result;
-  },
+  }
 
   async restore() {
-    await this._super(...arguments);
+    await super.restore(...arguments);
     const result = await fetch(`${basePath}/current`, {
       method: 'GET',
       headers: new Headers({
@@ -60,5 +60,5 @@ export default ToriiAuthenticator.extend({
     } else {
       throw result;
     }
-  },
-});
+  }
+}
