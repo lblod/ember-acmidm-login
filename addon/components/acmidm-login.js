@@ -1,10 +1,10 @@
-import { warn } from '@ember/debug';
 import Component from '@glimmer/component';
+import { warn } from '@ember/debug';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 
-export default class AcmIdmLoginComponent extends Component {
+export default class AcmidmLoginComponent extends Component {
   @tracked errorMessage = '';
   @tracked isAuthenticating = false;
   @service session;

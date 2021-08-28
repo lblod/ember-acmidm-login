@@ -3,8 +3,10 @@ import { getOwner } from '@ember/application';
 import fetch from 'fetch';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-export default class AcmIdmSwitchComponent extends Component {
+
+export default class AcmidmSwitchComponent extends Component {
   @tracked disabled = false;
+
   constructor() {
     super(...arguments);
     const config =
