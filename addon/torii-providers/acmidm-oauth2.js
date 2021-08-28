@@ -1,6 +1,5 @@
 import Oauth2 from 'torii/providers/oauth2-code';
 import { configurable } from 'torii/configuration';
-import { merge } from '@ember/polyfills';
 
 /**
  * This class implements authentication against ACM/IDM
@@ -27,7 +26,11 @@ export default Oauth2.extend({
   }),
 
   open(options) {
-    merge(options, { resizable: true, scrollbars: true });
     return this._super(options);
   },
 });
+    const opts = Object.assign({}, options, {
+      resizable: true,
+      scrollbars: true,
+    });
+    return this._super(opts);
