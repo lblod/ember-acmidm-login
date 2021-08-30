@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(environment) {
+module.exports = function (environment) {
   let ENV = {
     modulePrefix: 'dummy',
     environment,
@@ -13,14 +13,25 @@ module.exports = function(environment) {
       },
       EXTEND_PROTOTYPES: {
         // Prevent Ember Data from overriding Date.parse.
-        Date: false
-      }
+        Date: false,
+      },
     },
-
+    torii: {
+      disableRedirectInitializer: true,
+      providers: {
+        'acmidm-oauth2': {
+          apiKey: '{{OAUTH_API_KEY}}',
+          baseUrl: '{{OAUTH_BASE_URL}}',
+          scope: 'openid rrn vo profile abb_gelinktNotuleren',
+          redirectUri: '{{OAUTH_REDIRECT_URL}}',
+          logoutUrl: '{{OAUTH_LOGOUT_URL}}',
+        },
+      },
+    },
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
-    }
+    },
   };
 
   if (environment === 'development') {

@@ -1,0 +1,9 @@
+<Acmidm::Switch as |acmidm|>
+  <button ...attributes disabled={{acmidm.isSwitching}} type="button" {{on "click" acmidm.switch}}>
+    {{#if (has-block)}}
+      {{yield}}
+    {{else}}
+      Wissel van bestuurseenheid
+    {{/if}}
+  </button>
+</Acmidm::Switch>
