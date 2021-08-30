@@ -85,6 +85,7 @@ Contributing
 
 See the [Contributing](CONTRIBUTING.md) guide for details.
 
+NOTE: There's currently an issue when using this addon with npm link when using in a host app with ember-source < 3.27, see [this comment](https://github.com/lblod/ember-acmidm-login/pull/4#issuecomment-907618192) for more information.
 
 License
 ------------------------------------------------------------------------------
