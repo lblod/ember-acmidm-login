@@ -1,3 +1,11 @@
+## 1.2.1 (2021-09-15)
+
+#### :bug: Bug Fix
+* [#8](https://github.com/lblod/ember-acmidm-login/pull/8) read apiKey into clientId as we did before 1.2.0 ([@nvdk](https://github.com/nvdk))
+
+#### Committers: 1
+- Niels V ([@nvdk](https://github.com/nvdk))
+
 ## 1.2.0 (2021-08-30)
 
 #### :rocket: Enhancement
