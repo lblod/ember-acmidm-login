@@ -29,12 +29,12 @@ torii: {
   disableRedirectInitializer: true,
   providers: {
     'acmidm-oauth2': {
-      apiKey: 'your-key',
+      apiKey: 'your-key', // also called clientId
       baseUrl: 'https://authenticatie-ti.vlaanderen.be/op/v1/auth',
       scope: 'openid rrn vo profile',
       redirectUri: 'https://loket.lblod.info/authorization/callback',
       logoutUrl: 'https://authenticatie-ti.vlaanderen.be/op/v1/logout',
-      switchUrl: 'https://loket.lblod.info/switch-login' //optional
+      returnUrl: 'https://loket.lblod.info/switch-login' //optional
     }
   }
 }
@@ -42,43 +42,60 @@ torii: {
 
 Add the [acmidm-login-service](http://github.com/lblod/acmidm-login-service) in the backend to provide the necessary API endpoints.
 
-Configure authentication with [ember-simple-auth](https://github.com/simplabs/ember-simple-auth) and put the `{{acmidm-login}}` and `{{acmidm-logout}}` components on the appropriate pages. They will handle authentication with ACM/IDM automatically.
+Configure authentication with [ember-simple-auth](https://github.com/simplabs/ember-simple-auth) and put the `Acmidm::Login` and `Acmidm::Switch` components on the appropriate pages. They will handle authentication with ACM/IDM automatically.
 
-Finally, overwrite the `sessionInvalidated` event handler of Ember Simple Auth's `application-route-mixin`:
+### Acmidm::Login
+```handlebars
+<Acmidm::Login as |acmidm|>
+  <button type="button" {{on "click" acmd.login}}>login</button>
+  {{#if acmidm.errorMessage}}
+    <div class="error">{{acmdidm.errorMessage</div>
+  {{/if}}
+</Acmidm::Login>
+```
+
+### Acmidm::Switch
+To support switching without doing a full logout, set the appriopriate returnUrl in the torii configuration. add a `Acmidm::Switch` component and set up a switch route. Note that the returnUrl should be registered with acm/idm.
+
+
+an example:
+```handlebars
+{{!-- app/components/switch.hbs }}
+<Acmidm::Switch as |acmidm|>
+  <button ...attributes disabled={{acmidm.isSwitching}} type="button" {{on "click" acmidm.switch}}>
+    {{#if (has-block)}}
+      {{yield}}
+    {{else}}
+      Wissel van bestuurseenheid
+    {{/if}}
+  </button>
+</Acmidm::Switch>
+```
+
 
 ```javascript
+// app/routes/switch-login.js
 import Route from '@ember/routing/route';
-import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
-import ENV from 'frontend-loket/config/environment';
+import { inject as service } from '@ember/service';
 
-export default Route.extend(ApplicationRouteMixin, {
-  sessionInvalidated() {
-    const logoutUrl = ENV['torii']['providers']['acmidm-oauth2']['logoutUrl'];
-    window.location.replace(logoutUrl);
+export default class SwitchLoginRoute extends Route {
+  @service() session;
+
+  beforeModel(){
+    this.session.prohibitAuthentication('index');
+  }
+
+  async model() {
+    try {
+      return await this.session.authenticate('authenticator:torii', 'acmidm-oauth2');
+    }
+    catch(e) {
+      return 'Fout bij het aanmelden. Gelieve opnieuw te proberen.';
+    }
   }
 }
 ```
 
-To support switching without doing a full logout, set the appriopriate switchUrl in the torii configuration, add a `{{acmidm-switch}}` component and set up a switch route. This route should trigger a login, for example:
-
-```javascript
-import UnauthenticatedRouteMixin from 'ember-simple-auth/mixins/unauthenticated-route-mixin';
-import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
-export default Route.extend(UnauthenticatedRouteMixin, {
-  session: service(),
-  async model() {
-    try {
-      await this.session.authenticate('authenticator:torii', 'acmidm-oauth2');
-    }
-    catch(e) {
-      return 'Fout bij het aanmelden. Gelieve opnieuwe te proberen.';
-    }
-  }
-});
-```
-
-Note that this url should be registered with acm/idm
 
 Contributing
 ------------------------------------------------------------------------------
