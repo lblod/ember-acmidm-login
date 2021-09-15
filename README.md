@@ -34,7 +34,7 @@ torii: {
       scope: 'openid rrn vo profile',
       redirectUri: 'https://loket.lblod.info/authorization/callback',
       logoutUrl: 'https://authenticatie-ti.vlaanderen.be/op/v1/logout',
-      switchUrl: 'https://loket.lblod.info/switch-login' //optional
+      returnUrl: 'https://loket.lblod.info/switch-login' //optional
     }
   }
 }
@@ -65,7 +65,7 @@ export default class SessionService extends BaseSessionService {
 
 ### User account switching
 
-To support switching accounts without doing a full logout, set the appropriate `switchUrl` in the torii configuration and set up a switch route. This route should trigger a login, for example:
+To support switching accounts without doing a full logout, set the appropriate `returnUrl` in the torii configuration and set up a switch route. This route should trigger a login, for example:
 
 ```javascript
 import Route from '@ember/routing/route';
