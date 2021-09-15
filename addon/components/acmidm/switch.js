@@ -22,7 +22,7 @@ export default class AcmIdmSwitchComponent extends Component {
     }
 
     this.logoutUrl = providerConfig.logoutUrl;
-    this.clientId = providerConfig.clientId;
+    this.clientId = providerConfig.apiKey;
     this.returnUrl = providerConfig.returnUrl;
   }
 
