@@ -4,8 +4,28 @@
 
 {{outlet}}
 
-<AcmidmSwitch />
+<Acmidm::Switch as |acmidm|>
+  <button disabled={{acmidm.isSwitching}} type="button" {{on "click" acmidm.switch}}>
+    Wissel van gebruiker
+  </button>
+</Acmidm::Switch>
 
-<AcmidmLogin />
 
-<AcmidmLogout />
+<Acmidm::Login as |acmidm|>
+  <button
+    type="button"
+    loading={{acmidm.isAuthenticating}}
+    disabled={{acmidm.isAuthenticating}}
+    {{on "click" acmidm.login}}
+  >
+    {{#if acmidm.isAuthenticating}}
+      Aan het aanmelden...
+    {{else}}
+      Meld u aan
+    {{/if}}
+  </button>
+
+  {{#if acmidm.errorMessage}}
+    <p>{{acmidm.errorMessage}}</p>
+  {{/if}}
+</Acmidm::Login>
