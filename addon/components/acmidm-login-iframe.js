@@ -1,11 +1,8 @@
 import Component from '@glimmer/component';
 import { getOwner } from '@ember/application';
 import { action } from '@ember/object';
-import { guidFor } from '@ember/object/internals';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
-
-const basePath = '/sessions';
 
 export default class AcmidmLoginIframeComponent extends Component {
   @service session;
