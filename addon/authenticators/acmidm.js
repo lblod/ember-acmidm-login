@@ -13,6 +13,9 @@ export default class AcmidmAuthenticator extends Base {
     if (result.ok) {
       const response = await result.json();
     }
+    else {
+      throw result;
+    }
   }
 
   async authenticate(authorizationCode) {
