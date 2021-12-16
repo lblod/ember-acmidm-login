@@ -24,11 +24,21 @@ export default class AcmidmLoginIframeComponent extends Component {
     if (!this.providerConfig) {
       throw 'could not find acmidm-oauth2 configuration, make sure it is set in your application environment';
     }
-    this.url =
-      `${this.providerConfig.baseUrl}?response_type=code&` +
-      `client_id=${this.providerConfig.apiKey}&` +
-      `redirect_uri=${encodeURIComponent(this.providerConfig.redirectUri)}&` +
-      `scope=${this.providerConfig.scope}`;
+    if (this.args.switch) {
+      this.url =
+        this.providerConfig.logoutUrl +
+        `&switch=true` +
+        `&client_id=${this.providerConfig.clientId}` +
+        `&post_logout_redirect_uri=${encodeURIComponent(
+          this.providerConfig.returnUrl
+        )}`;
+    } else {
+      this.url =
+        `${this.providerConfig.baseUrl}?response_type=code&` +
+        `client_id=${this.providerConfig.apiKey}&` +
+        `redirect_uri=${encodeURIComponent(this.providerConfig.redirectUri)}&` +
+        `scope=${this.providerConfig.scope}`;
+    }
   }
 
   @action
