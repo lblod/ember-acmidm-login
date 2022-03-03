@@ -35,9 +35,6 @@ trigger:
 ---
 kind: secret
 name: npm_access_token
-data: d7368bba-01b6-4fc8-aa34-a4856cb16e28
----
-kind: signature
-hmac: 68610869bf4ab2f8b668ce06b2320bbe5ffe5ba2eeb8e9f7167dcc785d617845
+data: 0Uvkk6tyBjdkISyjKIPqbBlBeCZ0Br+yRcFncTbn3gLIBLsNlE139r5DkvepVZFeqgBCEG7zD2/eKxjlnc2UX62e/+g=
 
 ...
