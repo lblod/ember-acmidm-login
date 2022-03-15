@@ -28,7 +28,7 @@
   "dependencies": {
     "ember-cli-babel": "^7.26.6",
     "ember-cli-htmlbars": "^5.7.1",
-    "ember-simple-auth": "^3.0.0",
+    "ember-simple-auth": "^3.0.0 || ^4.2.1",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
     "ember-fetch": "^8.1.0",
