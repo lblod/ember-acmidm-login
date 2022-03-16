@@ -1,3 +1,16 @@
+
+## 1.4.0 (2022-03-16)
+
+#### :rocket: Enhancement
+* [#11](https://github.com/lblod/ember-acmidm-login/pull/11) Allow apps to use ember-simple-auth v4 ([@Windvis](https://github.com/Windvis))
+
+#### :house: Internal
+* [#12](https://github.com/lblod/ember-acmidm-login/pull/12) release-it setup updates ([@Windvis](https://github.com/Windvis))
+
+#### Committers: 1
+- Sam Van Campenhout ([@Windvis](https://github.com/Windvis))
+
+
 ## 1.3.0 (2021-09-15)
 
 #### :rocket: Enhancement
