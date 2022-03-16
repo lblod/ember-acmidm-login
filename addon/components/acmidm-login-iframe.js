@@ -56,7 +56,7 @@ export default class AcmidmLoginIframeComponent extends Component {
         this.session.authenticate('authenticator:acmidm', authorizationCode);
       } catch (e) {
         // assume we loaded the remote href
-        if (e.name !== "SecurityError") {
+        if (e.name !== 'SecurityError') {
           this.errorMessage = e;
         }
         console.log(e);
