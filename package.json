@@ -1,0 +1,26 @@
+{
+  "name": "ember-acmidm-login",
+  "version": "0.0.0",
+  "private": true,
+  "repository": "",
+  "license": "MIT",
+  "author": "",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "npm run build --workspace ember-acmidm-login",
+    "start": "concurrently 'npm:start:*' --restart-after 5000 --prefix-colors cyan,white,yellow",
+    "start:tests": "npm start --workspace ember-acmidm-login",
+    "start:addon": "npm start --workspace ember-acmidm-login -- --no-watch.clearScreen",
+    "test": "npm test --workspace ember-acmidm-login",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^7.2.1",
+    "prettier": "^2.5.1"
+  },
+  "workspaces": [
+    "ember-acmidm-login",
+    "test-app"
+  ]
+}
