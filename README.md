@@ -56,7 +56,7 @@ export default class IndexRoute extends Route {
 
   queryParams = ['code'];
   model(params) {
-    this.session.authenticate('authenticator:acmidm', params.code);
+    this.session.authenticate('authenticator:acm-idm', this.code);
   }
 }
 ```
