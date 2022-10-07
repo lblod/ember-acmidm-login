@@ -21,7 +21,7 @@ ember install ember-acmidm-login
 
 Usage
 ------------------------------------------------------------------------------
-Make sure you've configured the (acmidm-login-service)[https://github.com/lblod/acmidm-login-service] correctly in your project. The config should match the config provided to this addon.
+Make sure you've configured the [acmidm-login-service](https://github.com/lblod/acmidm-login-service) correctly in your project. The config should match the config provided to this addon.
 The addon currently requires the service to be available under `/sessions`.
 
 ### logging in
