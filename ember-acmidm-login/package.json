@@ -1,5 +1,5 @@
 {
-  "name": "ember-acmidm-login",
+  "name": "@lblod/ember-acmidm-login",
   "version": "0.0.0",
   "description": "The default blueprint for Embroider v2 addons.",
   "keywords": [
@@ -56,11 +56,16 @@
     "version": 2,
     "type": "addon",
     "main": "addon-main.js",
-    "app-js": {}
+    "app-js": {
+      "./authenticators/acm-idm.js": "./dist/_app_/authenticators/acm-idm.js"
+    }
   },
   "exports": {
     ".": "./dist/index.js",
     "./*": "./dist/*",
     "./addon-main.js": "./addon-main.js"
+  },
+  "volta": {
+    "extends": "../package.json"
   }
 }
