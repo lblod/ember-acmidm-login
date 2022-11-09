@@ -27,6 +27,9 @@
   "dependencies": {
     "@embroider/addon-shim": "^1.0.0"
   },
+  "peerDependencies": {
+    "ember-simple-auth": "4.x"
+  },
   "devDependencies": {
     "@babel/core": "^7.17.0",
     "@babel/eslint-parser": "^7.18.2",
