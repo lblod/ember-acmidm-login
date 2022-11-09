@@ -7,20 +7,15 @@ pipeline:
     image: danlynn/ember-cli:4.4.0
     group: lint
     commands:
-      - npm run lint:js
+      - npm run lint:js --workspaces --if-present
   lint-hbs:
     image: danlynn/ember-cli:4.4.0
     group: lint
     commands:
-      - npm run lint:hbs
-  lint-dependencies:
-    image: danlynn/ember-cli:4.4.0
-    group: lint
-    commands:
-      - ember dependency-lint || exit 0
+      - npm run lint:hbs --workspaces --if-present
   test:
     image: danlynn/ember-cli:4.4.0
     commands:
-      - npm run test:ember || exit 0
+      - npm run test || exit 0
 when:
   event: pull_request
