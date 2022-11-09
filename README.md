@@ -15,7 +15,7 @@ Installation
 ------------------------------------------------------------------------------
 
 ```
-ember install ember-acmidm-login
+ember install @lblod/ember-acmidm-login
 ```
 
 
@@ -63,6 +63,7 @@ export default class IndexRoute extends Route {
 
 ### logging out
 ```js
+
 ```
 
 Contributing
