@@ -58,6 +58,10 @@ export default class VoPageComponent extends Component {
 }
 ```
 
+```hbs
+<a href={{this.loginUrl}}>login</a>
+```
+
 In other cases either build the URL yourself or use the helper mentioned above.
 
 providerConfig requires the following attributes:
