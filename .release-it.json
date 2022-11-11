@@ -2,7 +2,11 @@
   "github": {
     "release": true
   },
-  "npm": {
-    "publish": false
-  }
+  "plugins": {
+    "@release-it-plugins/workspaces": {
+      "publish": false,
+      "skipChecks": true
+    }
+  },
+  "npm": false
 }

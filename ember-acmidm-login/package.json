@@ -1,7 +1,7 @@
 {
   "name": "@lblod/ember-acmidm-login",
   "version": "0.0.0",
-  "description": "The default blueprint for Embroider v2 addons.",
+  "description": "Ember addon providing an Ember Simple Auth authenticator for ACM/IDM",
   "keywords": [
     "ember-addon"
   ],

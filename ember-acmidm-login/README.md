@@ -59,7 +59,7 @@ export default class VoPageComponent extends Component {
 ```
 
 ```hbs
-<a href={{this.loginUrl}}>login</a>
+<a href={{this.loginUrl}}>Login</a>
 ```
 
 In other cases either build the URL yourself or use the helper mentioned above.

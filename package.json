@@ -17,6 +17,7 @@
     "release": "release-it"
   },
   "devDependencies": {
+    "@release-it-plugins/workspaces": "^3.2.0",
     "concurrently": "^7.2.1",
     "prettier": "^2.5.1",
     "release-it": "^15.5.0"
