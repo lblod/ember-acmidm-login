@@ -1,5 +1,5 @@
 {
-  "name": "ember-acmidm-login",
+  "name": "@lblod/ember-acmidm-login",
   "version": "0.0.0",
   "private": true,
   "repository": "",
@@ -9,9 +9,9 @@
     "prepare": "npm run build",
     "build": "npm run build --workspace ember-acmidm-login",
     "start": "concurrently 'npm:start:*' --restart-after 5000 --prefix-colors cyan,white,yellow",
-    "start:tests": "npm start --workspace ember-acmidm-login",
+    "start:tests": "npm start --workspace test-app",
     "start:addon": "npm start --workspace ember-acmidm-login -- --no-watch.clearScreen",
-    "test": "npm test --workspace ember-acmidm-login",
+    "test": "npm test --workspace test-app",
     "lint": "npm run lint --workspaces --if-present",
     "lint:fix": "npm run lint:fix --workspaces --if-present",
     "release": "release-it"
