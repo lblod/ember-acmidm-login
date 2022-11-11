@@ -13,11 +13,13 @@
     "start:addon": "npm start --workspace ember-acmidm-login -- --no-watch.clearScreen",
     "test": "npm test --workspace ember-acmidm-login",
     "lint": "npm run lint --workspaces --if-present",
-    "lint:fix": "npm run lint:fix --workspaces --if-present"
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "release": "release-it"
   },
   "devDependencies": {
     "concurrently": "^7.2.1",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "release-it": "^15.5.0"
   },
   "workspaces": [
     "ember-acmidm-login",
