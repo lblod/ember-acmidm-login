@@ -86,7 +86,7 @@ export default class CallbackRoute extends Route {
   }
   
   async model(params) {
-    this.session.authenticate('authenticator:acm-idm', this.code);
+    this.session.authenticate('authenticator:acm-idm', params.code);
   }
 }
 ```
