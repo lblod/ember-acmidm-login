@@ -28,8 +28,5 @@
   ],
   "volta": {
     "node": "16.17.1"
-  },
-  "dependencies": {
-    "ember-simple-auth": "^4.2.2"
   }
 }
