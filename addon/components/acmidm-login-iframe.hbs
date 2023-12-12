@@ -1,0 +1,8 @@
+{{#if this.errorMessage}}
+  <AuAlert @alertIcon="alert-triangle" @alertTitle="Authenticatie niet geslaagd">
+    {{this.errorMessage}}
+  </AuAlert>
+{{else}}
+  {{!-- template-lint-disable no-inline-styles --}}
+  <iframe src={{this.url}} style="height:100%;width:100%" {{on "load" this.detectLogin}} title="inloggen via het gebruikersbeheer van de vlaamse overheid"></iframe>
+{{/if}}
