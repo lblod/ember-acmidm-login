@@ -1,6 +1,6 @@
 {
   "name": "@lblod/ember-acmidm-login",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0",
   "description": "Ember addon providing an Ember Simple Auth authenticator for ACM/IDM",
   "keywords": [
     "ember-addon"
