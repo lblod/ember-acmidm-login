@@ -26,7 +26,7 @@ The addon currently requires the service to be available under `/sessions`.
 
 ### install ember-simple-auth
 ```sh
-npm install ember-simple-auth@4
+npm install ember-simple-auth@6
 ```
 
 in your application route setup the service
@@ -157,6 +157,62 @@ export default class SessionService extends BaseSessionService {
 }
 
 ```
+
+
+### switching sessions via acmid
+In some cases you want users to switch their session to another administrative unit. In this case the session in our application is ended and the user is redirected to a special URL on the ACM IDM side. The following is an example of how this redirect is handled (this is a route you redirect the user to):
+
+```js
+// app/routes/auth/switch.js
+import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
+import ENV from 'frontend-loket/config/environment';
+
+export default class AuthSwitchRoute extends Route {
+  @service router;
+  @service session;
+
+  async beforeModel(transition) {
+    this.session.requireAuthentication(transition, 'login');
+
+    try {
+      await this.session.invalidate();
+      let switchURL = buildSwitchUrl(ENV.acmidm);
+      window.location.replace(switchURL);
+    } catch (error) {
+      throw new Error(
+        'Something went wrong while trying to remove the session on the server',
+        {
+          cause: error,
+        }
+      );
+    }
+  }
+}
+
+function buildSwitchUrl({ logoutUrl, clientId, switchRedirectUrl }) {
+  let switchUrl = new URL(logoutUrl);
+  let searchParams = switchUrl.searchParams;
+
+  searchParams.append('switch', true);
+  searchParams.append('client_id', clientId);
+  searchParams.append('post_logout_redirect_uri', switchRedirectUrl);
+
+  return switchUrl.href;
+}
+```
+
+it assumes the following config is available in environment.js:
+```js
+    ENV.acmidm = {
+      ...ENV.acmidm,
+      clientId: 'your-client-id',
+      authUrl: 'https://authenticatie.vlaanderen.be/op/v1/auth',
+      logoutUrl: 'https://authenticatie.vlaanderen.be/op/v1/logout',
+      switchRedirectUrl: 'url-to-your-callback-route',
+    };
+```
+
 Contributing
 ------------------------------------------------------------------------------
 
