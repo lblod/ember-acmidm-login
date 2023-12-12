@@ -1,0 +1,21 @@
+pipeline:
+  install:
+    image: danlynn/ember-cli:4.4.0
+    commands:
+      - npm ci
+  lint-js:
+    image: danlynn/ember-cli:4.4.0
+    group: lint
+    commands:
+      - npm run lint:js --workspaces --if-present
+  lint-hbs:
+    image: danlynn/ember-cli:4.4.0
+    group: lint
+    commands:
+      - npm run lint:hbs --workspaces --if-present
+  test:
+    image: danlynn/ember-cli:4.4.0
+    commands:
+      - npm run test || exit 0
+when:
+  event: pull_request

@@ -1,21 +1,12 @@
 {
-  "git": {
-    "requireBranch": [
-      "master",
-      "development"
-    ]
-  },
   "github": {
-    "release": true,
-    "tokenRef": "GITHUB_AUTH"
+    "release": true
   },
   "plugins": {
-    "release-it-lerna-changelog": {
-      "infile": "CHANGELOG.md",
-      "launchEditor": true
+    "@release-it-plugins/workspaces": {
+      "publish": false,
+      "skipChecks": true
     }
   },
-  "npm": {
-    "publish": false
-  }
+  "npm": false
 }

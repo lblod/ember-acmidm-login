@@ -1,15 +1,14 @@
 ember-acmidm-login
 ==============================================================================
-
-Ember addon providing an Ember Simple Auth authenticator for ACM/IDM and a simple login and switch component.
+Ember addon providing an Ember Simple Auth authenticator for ACM/IDM in a semantic.works stack.
 
 
 Compatibility
 ------------------------------------------------------------------------------
 
-* Ember.js v3.20 or above
-* Ember CLI v3.20 or above
-* Node.js v10 or above
+* Ember.js v3.28 or above
+* Embroider or ember-auto-import v2
+* ember-simple-auth >= 4.2
 
 
 Installation
@@ -22,100 +21,203 @@ ember install @lblod/ember-acmidm-login
 
 Usage
 ------------------------------------------------------------------------------
-Add the following configuration of the ACM/IDM OpenId provider to `config/environment.js`:
+Make sure you've configured the [acmidm-login-service](https://github.com/lblod/acmidm-login-service) correctly in your project. The config should match the config provided to this addon.
+The addon currently requires the service to be available under `/sessions`.
 
-```javascript
-torii: {
-  disableRedirectInitializer: true,
-  providers: {
-    'acmidm-oauth2': {
-      apiKey: 'your-key',
-      baseUrl: 'https://authenticatie-ti.vlaanderen.be/op/v1/auth',
-      scope: 'openid rrn vo profile',
-      redirectUri: 'https://loket.lblod.info/authorization/callback',
-      logoutUrl: 'https://authenticatie-ti.vlaanderen.be/op/v1/logout',
-      returnUrl: 'https://loket.lblod.info/switch-login' //optional
-    }
-  }
-}
+### install ember-simple-auth
+```sh
+npm install ember-simple-auth@6
 ```
 
-Add the [acmidm-login-service](http://github.com/lblod/acmidm-login-service) in the backend to provide the necessary API endpoints.
+in your application route setup the service
+```js
+// app/routes/application.js
 
-Configure authentication with [ember-simple-auth](https://github.com/simplabs/ember-simple-auth) and put the `<Acmidm::Login>` component on the appropriate pages. This will handle authentication with ACM/IDM automatically. 
-
-> The `<Acmidm::Login>` component does not output any HTML so your project will need to provide this. A usage example can be found [in the dummy app](https://github.com/lblod/ember-acmidm-login/blob/91bcd31655b27b51dce47ed25b67a64d7a15049b/tests/dummy/app/templates/application.hbs#L14-L31).
-
-Finally, extend Ember Simple Auth's `SessionService` and override the `handleInvalidation` method:
-
-```javascript
 import { inject as service } from '@ember/service';
-import BaseSessionService from 'ember-simple-auth/services/session';
-import ENV from 'app-name/config/environment';
+import Route from '@ember/routing/route';
 
-export default class SessionService extends BaseSessionService {
-  @service currentSession;
+export default Route.extend({
+  session: service(),
 
-  handleInvalidation() {
-    const logoutUrl = ENV['torii']['providers']['acmidm-oauth2']['logoutUrl'];
-    super.handleInvalidation(logoutUrl);
-  }
+  beforeModel() {
+    return this.session.setup();
+  },
+});
+```
+
+### logging in
+Step 1 is redirecting to ACM/IDM by providing the correct OAUth2 values. If you're upgrading from version 1 you can use the following code to build the URL:
+```js
+import Component from '@glimmer/component';
+import config from 'your-app/config/environment';
+import buildUrlFromConfig from '@lblod/ember-acmidm-login/utils/build-url-from-config';
+const providerConfig = config.torii.providers['acmidm-oauth2'];
+
+export default class VoPageComponent extends Component {
+  loginUrl = buildUrlFromConfig(providerConfig);
 }
 ```
 
-### User account switching
+```hbs
+<a href={{this.loginUrl}}>Login</a>
+```
 
-To support switching accounts without doing a full logout, set the appropriate `returnUrl` in the torii configuration and set up a switch route. This route should trigger a login, for example:
+In other cases either build the URL yourself or use the helper mentioned above.
 
-```javascript
+providerConfig requires the following attributes:
+- `baseUrl`: acm/idm endpoint, typically https://authenticatie.vlaanderen.be/op/v1/auth
+- `apiKey`: the client_id of this client (naming of the attribute is historic)
+- `redirectUri`: page ACM/IDM needs to redirect to, you'll need to set up a route for this
+- `scope`: [optional] scope you're requesting
+
+Next set up a route matching the redirectUrl to capture the returned token and authenticate with it:
+```js
+// /app/routes/callback.js
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 
-export default class SwitchRoute extends Route {
+export default class CallbackRoute extends Route {
   @service session;
 
-  async model() {
+  queryParams = ['code'];
+  beforeModel() {
+    // redirect to index if already authenticated
+    this.session.prohibitAuthentication('index');
+  }
+  
+  async model(params) {
+    this.session.authenticate('authenticator:acm-idm', params.code);
+  }
+}
+```
+
+### logging out
+
+```hbs
+{{!-- app/templates/application.hbs --}}
+<div class="menu">
+  …
+  {{#if this.session.isAuthenticated}}
+    <a {{on "click" this.invalidateSession}}>Logout</a>
+  {{else}}
+    {{#link-to 'login'}}Login{{/link-to}}
+  {{/if}}
+ <a {{on "click" this.invalidateSession}}>Logout</a>
+ </div>
+ <div class="main">
+  {{outlet}}
+</div>
+```
+
+```js
+// app/controllers/application.js
+import Controller from '@ember/controller';
+import { inject as service } from '@ember/service';
+import { action } from "@ember/object";
+export default class ApplicationController extends Controller {
+  @service session;
+
+  …
+  
+  @action
+  async invalidateSession() {
     try {
-      await this.session.authenticate('authenticator:torii', 'acmidm-oauth2');
+      await this.session.invalidate();
     }
     catch(e) {
-      return 'Fout bij het aanmelden. Gelieve opnieuwe te proberen.';
+      // error handling
     }
   }
 }
 ```
 
-Note that this url should be registered with ACM/IDM
+### loading current user on validation and redirecting to acmidm logout url on succesfull invalidation
+It's often useful to extend the base session service to hook into the `handleAuthentication` and `handleInvalidation` events of ember-simple-auth. An example is given below 
 
-After the switch route is created you can add the `<Acmidm::Switch>` component were needed.
+```js
+// app/services/session.js
+import { inject as service } from '@ember/service';
+import BaseSessionService from 'ember-simple-auth/services/session';
+import config from 'your-app/config/environment';
 
-> The `<Acmidm::Switch>` component does not output any HTML so your project will need to provide this. A usage example can be found [in the dummy app](https://github.com/lblod/ember-acmidm-login/blob/e6fec45958e626db04269cd233d5549fa5e88e23/tests/dummy/app/templates/application.hbs#L7-L11).
+const providerConfig = config.torii.providers['acmidm-oauth2'];
+export default class SessionService extends BaseSessionService {
+  @service currentSession;
+
+  handleAuthentication(routeAfterAuthentication) {
+    super.handleAuthentication(routeAfterAuthentication);
+    this.currentSession.load();
+  }
+
+  handleInvalidation() {
+
+    const logoutUrl = providerConfig.logoutUrl;
+    super.handleInvalidation(logoutUrl);
+  }
+}
+
+```
+
+
+### switching sessions via acmid
+In some cases you want users to switch their session to another administrative unit. In this case the session in our application is ended and the user is redirected to a special URL on the ACM IDM side. The following is an example of how this redirect is handled (this is a route you redirect the user to):
+
+```js
+// app/routes/auth/switch.js
+import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
+import ENV from 'frontend-loket/config/environment';
+
+export default class AuthSwitchRoute extends Route {
+  @service router;
+  @service session;
+
+  async beforeModel(transition) {
+    this.session.requireAuthentication(transition, 'login');
+
+    try {
+      await this.session.invalidate();
+      let switchURL = buildSwitchUrl(ENV.acmidm);
+      window.location.replace(switchURL);
+    } catch (error) {
+      throw new Error(
+        'Something went wrong while trying to remove the session on the server',
+        {
+          cause: error,
+        }
+      );
+    }
+  }
+}
+
+function buildSwitchUrl({ logoutUrl, clientId, switchRedirectUrl }) {
+  let switchUrl = new URL(logoutUrl);
+  let searchParams = switchUrl.searchParams;
+
+  searchParams.append('switch', true);
+  searchParams.append('client_id', clientId);
+  searchParams.append('post_logout_redirect_uri', switchRedirectUrl);
+
+  return switchUrl.href;
+}
+```
+
+it assumes the following config is available in environment.js:
+```js
+    ENV.acmidm = {
+      ...ENV.acmidm,
+      clientId: 'your-client-id',
+      authUrl: 'https://authenticatie.vlaanderen.be/op/v1/auth',
+      logoutUrl: 'https://authenticatie.vlaanderen.be/op/v1/logout',
+      switchRedirectUrl: 'url-to-your-callback-route',
+    };
+```
 
 Contributing
 ------------------------------------------------------------------------------
 
 See the [Contributing](CONTRIBUTING.md) guide for details.
 
-NOTE: There's currently an issue when using this addon with npm link when using in a host app with ember-source < 3.27, see [this comment](https://github.com/lblod/ember-acmidm-login/pull/4#issuecomment-907618192) for more information.
-
-
-Releasing a new version
-------------------------------------------------------------------------------
-We use [`release-it`](https://github.com/release-it/release-it) to handle our release flow and [`lerna-changelog`](https://github.com/lerna/lerna-changelog) to generate the changelog for that release.
-
-### Prerequisites
-- Both `release-it` and `lerna-changelog` require a Github [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) to work properly.
-- All PRs that need to show up in the changelog need a descriptive title and [correct label](https://github.com/lerna/lerna-changelog).
-
-### Previewing the changelog (optional)
-If you want to preview the changelog that will be generated before starting the release flow you can run the following command:
-
-`GITHUB_AUTH=your-access-token npx lerna-changelog`
-
-### Creating a new release
-Simply run `GITHUB_AUTH=your-access-token npm run release` and follow the prompts.
-
-After the new tag is created and pushed Drone will take care of publishing the package to npm.
 
 License
 ------------------------------------------------------------------------------
