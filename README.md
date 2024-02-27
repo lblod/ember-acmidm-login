@@ -90,7 +90,7 @@ export default class CallbackRoute extends Route {
 }
 ```
 
-```
+```js
 // /app/controllers/callback.js
 import Controller from '@ember/controller';
 
