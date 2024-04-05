@@ -2,131 +2,116 @@ ember-acmidm-login
 ==============================================================================
 Ember addon providing an Ember Simple Auth authenticator for ACM/IDM in a semantic.works stack.
 
+## Tutorials
+### Install the addon in your application
+To add the ember-acmidm-login addon to your application, execute the following install commands:
 
-Compatibility
-------------------------------------------------------------------------------
-
-* Ember.js v3.28 or above
-* Embroider or ember-auto-import v2
-* ember-simple-auth >= 4.2
-
-
-Installation
-------------------------------------------------------------------------------
-
-```
+```bash
 ember install @lblod/ember-acmidm-login
-```
-
-
-Usage
-------------------------------------------------------------------------------
-Make sure you've configured the [acmidm-login-service](https://github.com/lblod/acmidm-login-service) correctly in your project. The config should match the config provided to this addon.
-The addon currently requires the service to be available under `/sessions`.
-
-### install ember-simple-auth
-```sh
 npm install ember-simple-auth@6
 ```
 
-in your application route setup the service
+Make sure you've configured the [acmidm-login-service](https://github.com/lblod/acmidm-login-service) (or any fork) correctly in your project. The addon currently requires the service endpoints to be available under `/sessions`.
+
+Configure the following variables via `ENV.acmidm` in `config/environment.js`. The values must match the config provided to the backend login service.
+
 ```js
-// app/routes/application.js
+// config/environment.js
 
-import { inject as service } from '@ember/service';
-import Route from '@ember/routing/route';
-
-export default Route.extend({
-  session: service(),
-
-  beforeModel() {
-    return this.session.setup();
-  },
-});
-```
-
-### logging in
-Step 1 is redirecting to ACM/IDM by providing the correct OAUth2 values. If you're upgrading from version 1 you can use the following code to build the URL:
-```js
-import Component from '@glimmer/component';
-import config from 'your-app/config/environment';
-import buildUrlFromConfig from '@lblod/ember-acmidm-login/utils/build-url-from-config';
-const providerConfig = config.torii.providers['acmidm-oauth2'];
-
-export default class VoPageComponent extends Component {
-  loginUrl = buildUrlFromConfig(providerConfig);
+module.exports = function (environment) {
+  const ENV = {
+    ...,
+    acmidm: {
+      apiKey: 'your-client-id',
+      baseUrl: 'https://authenticatie.vlaanderen.be/op/v1/auth',
+      logoutUrl: 'https://authenticatie.vlaanderen.be/op/v1/logout',
+      scope: 'openid vo profile'
+    }
+  };
 }
 ```
 
+In your application route initialize the Ember Simple Auth session service:
+
+```js
+// app/routes/application.js
+
+import Route from '@ember/routing/route';
+import { service } from '@ember/service';
+
+export default class ApplicationRoute extends Route {
+  @service session;
+
+  beforeModel() {
+    return this.session.setup();
+  }
+}
+```
+
+## How-to guides
+### Add login to your app
+First step is to create a login link/button which redirects to ACM/IDM. The login URL can be constructed as follows in the controller/component where you want to show a login button:
+
+```js
+import Controller from '@ember/controller';
+import ENV from 'your-app/config/environment';
+import buildUrlFromConfig from '@lblod/ember-acmidm-login/utils/build-url-from-config';
+
+export default class LoginController extends Controller {
+  loginUrl = buildUrlFromConfig(ENV.acmidm);
+}
+```
+
+In the template simply add the following:
 ```hbs
 <a href={{this.loginUrl}}>Login</a>
 ```
 
-In other cases either build the URL yourself or use the helper mentioned above.
-
-providerConfig requires the following attributes:
-- `baseUrl`: acm/idm endpoint, typically https://authenticatie.vlaanderen.be/op/v1/auth
-- `apiKey`: the client_id of this client (naming of the attribute is historic)
-- `redirectUri`: page ACM/IDM needs to redirect to, you'll need to set up a route for this
-- `scope`: [optional] scope you're requesting
-
-Next set up a route matching the redirectUrl to capture the returned token and authenticate with it:
+Next, set up a route and controller to handle the callback from ACM/IDM after authentication. The route must match the path of the redirect URL and will receive an authorization code as query param:
 ```js
-// /app/routes/callback.js
+// app/routes/authentication/callback.js
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
+import { service } from '@ember/service';
 
-export default class CallbackRoute extends Route {
+export default class AuthenticationCallbackRoute extends Route {
   @service session;
 
   beforeModel() {
     // redirect to index if already authenticated
     this.session.prohibitAuthentication('index');
   }
-  
-  async model(params) {
+
+  model(params) {
     this.session.authenticate('authenticator:acm-idm', params.code);
   }
 }
 ```
 
 ```js
-// /app/controllers/callback.js
+// app/controllers/authentication/callback.js
 import Controller from '@ember/controller';
 
-export default class CallbackController extends Controller {
+export default class AuthenticationCallbackController extends Controller {
   queryParams = ['code'];
 }
 ```
 
-### logging out
+The model hook will pass the authorization code to the ACM/IDM authenticator which will on its turn communicate with the backend to log in the user.
 
-```hbs
-{{!-- app/templates/application.hbs --}}
-<div class="menu">
-  …
-  {{#if this.session.isAuthenticated}}
-    <a {{on "click" this.invalidateSession}}>Logout</a>
-  {{else}}
-    {{#link-to 'login'}}Login{{/link-to}}
-  {{/if}}
- <a {{on "click" this.invalidateSession}}>Logout</a>
- </div>
- <div class="main">
-  {{outlet}}
-</div>
-```
+Have a look at the Ember Simple Auth documentation to learn how to protect your routes from unauthenticated access.
+
+### Add a logout button to your app
+Create a controller (or component) that injects the `session` service and handles a session invalidation action as follows:
 
 ```js
 // app/controllers/application.js
 import Controller from '@ember/controller';
-import { inject as service } from '@ember/service';
-import { action } from "@ember/object";
+import { service } from '@ember/service';
+import { action } from '@ember/object';
+
 export default class ApplicationController extends Controller {
   @service session;
 
-  …
-  
   @action
   async invalidateSession() {
     try {
@@ -139,95 +124,117 @@ export default class ApplicationController extends Controller {
 }
 ```
 
-### loading current user on validation and redirecting to acmidm logout url on succesfull invalidation
-It's often useful to extend the base session service to hook into the `handleAuthentication` and `handleInvalidation` events of ember-simple-auth. An example is given below 
+Next, show a logout button on your page if the user is logged in
+```hbs
+{{!-- app/templates/application.hbs --}}
+{{#if this.session.isAuthenticated}}
+  <a {{on "click" this.invalidateSession}}>Logout</a>
+{{/if}}
+```
+
+Finally, we need to make sure to terminate the session on the ACM/IDM side as well by redirecting the user to a logout URL when the session gets invalidated. To do so, extend Ember Simple Auth's session service to hook into the `handleInvalidation` event:
 
 ```js
 // app/services/session.js
-import { inject as service } from '@ember/service';
 import BaseSessionService from 'ember-simple-auth/services/session';
-import config from 'your-app/config/environment';
+import ENV from 'your-app/config/environment';
 
-const providerConfig = config.torii.providers['acmidm-oauth2'];
 export default class SessionService extends BaseSessionService {
-  @service currentSession;
-
-  handleAuthentication(routeAfterAuthentication) {
-    super.handleAuthentication(routeAfterAuthentication);
-    this.currentSession.load();
-  }
-
   handleInvalidation() {
-
-    const logoutUrl = providerConfig.logoutUrl;
+    const logoutUrl = ENV.acmidm.logoutUrl;
     super.handleInvalidation(logoutUrl);
   }
 }
 
 ```
 
-
-### switching sessions via acmid
-In some cases you want users to switch their session to another administrative unit. In this case the session in our application is ended and the user is redirected to a special URL on the ACM IDM side. The following is an example of how this redirect is handled (this is a route you redirect the user to):
+### Load user information on authentication
+Extend Ember Simple Auth's session service to hook into the `handleAuthentication` event and request some user info from the backend. For example:
 
 ```js
-// app/routes/auth/switch.js
-import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
-import ENV from 'frontend-loket/config/environment';
+// app/services/session.js
+import { service } from '@ember/service';
+import BaseSessionService from 'ember-simple-auth/services/session';
 
-export default class AuthSwitchRoute extends Route {
+export default class SessionService extends BaseSessionService {
+  @service userInfo;
+
+  handleAuthentication(routeAfterAuthentication) {
+    super.handleAuthentication(routeAfterAuthentication);
+    // do anything you want to load user info from the backend
+    this.userInfo.load();
+  }
+}
+
+```
+
+### Switch sessions via ACM/IDM
+Sometimes an app needs to allow users to switch their session (e.g. to another administrative unit they belong to). In this scenario, the session in our application will be ended and the user is redirected to an URL on ACM/IDM where he can execute the switch. ACM/IDM will then call the callback URL and the user gets logged in with his new identity as in the regular login flow.
+
+First, add a `switchUrl` to the `acmidm` config in `config/environment.js`:
+```js
+// config/environment.js 
+
+  ENV.acmidm = {
+    ... // other config
+    switchRedirectUrl: 'url-to-your-callback-route'
+  };
+```
+
+Next, set up a route `authentication.switch` which will redirect the user to the switch URL of ACM/IDM.
+
+```js
+// app/routes/authentication/switch.js
+import Route from '@ember/routing/route';
+import { service } from '@ember/service';
+import ENV from 'your-app/config/environment';
+
+export default class AuthenticationSwitchRoute extends Route {
   @service router;
   @service session;
 
   async beforeModel(transition) {
+    // ensure the user is logged in
     this.session.requireAuthentication(transition, 'login');
 
     try {
       await this.session.invalidate();
-      let switchURL = buildSwitchUrl(ENV.acmidm);
+      const switchURL = buildSwitchUrl(ENV.acmidm);
       window.location.replace(switchURL);
     } catch (error) {
-      throw new Error(
-        'Something went wrong while trying to remove the session on the server',
-        {
-          cause: error,
-        }
-      );
+      // Handle error
     }
   }
 }
 
-function buildSwitchUrl({ logoutUrl, clientId, switchRedirectUrl }) {
+function buildSwitchUrl({ logoutUrl, apiKey, switchRedirectUrl }) {
   let switchUrl = new URL(logoutUrl);
   let searchParams = switchUrl.searchParams;
 
   searchParams.append('switch', true);
-  searchParams.append('client_id', clientId);
+  searchParams.append('client_id', apiKey);
   searchParams.append('post_logout_redirect_uri', switchRedirectUrl);
 
   return switchUrl.href;
 }
 ```
 
-it assumes the following config is available in environment.js:
-```js
-    ENV.acmidm = {
-      ...ENV.acmidm,
-      clientId: 'your-client-id',
-      authUrl: 'https://authenticatie.vlaanderen.be/op/v1/auth',
-      logoutUrl: 'https://authenticatie.vlaanderen.be/op/v1/logout',
-      switchRedirectUrl: 'url-to-your-callback-route',
-    };
+Finally, add a link to the switch-route in your template
+```hbs
+<LinkTo route="authentication.switch">Switch session</LinkTo>
 ```
 
-Contributing
-------------------------------------------------------------------------------
+## Reference
+### Configuration
+The following options can be configured via the `ENV.acmidm` object in `config/environment.js`. It's important that the values match the configuration of the backend login service.
 
-See the [Contributing](CONTRIBUTING.md) guide for details.
+The following options are required: 
+- `baseUrl`: ACM/IDM auth endpoint, typically https://authenticatie.vlaanderen.be/op/v1/auth
+- `apiKey`: the client ID of this application (naming of the attribute is historic)
+- `redirectUri`: URL of the page ACM/IDM needs to redirect to after authentication. You'll need to set up a route to capture this. E.g. https://myapp.vlaanderen.be/authorization/callback
+- `scope`: comma-separated list of scopes you're requesting from ACM/IDM. E.g. `'openid vo profile'`
 
+The following options can be optionally provided:
+- `logoutUrl`: ACM/IDM logout endpoint, typically https://authenticatie.vlaanderen.be/op/v1/logout
+- `switchRedirectUrl`: URL of the page ACM/IDM needs to redirect to after switching. You'll need to set up a route to capture this. Typically the same value as for `redirectUri` can be used.
 
-License
-------------------------------------------------------------------------------
-
-This project is licensed under the [MIT License](LICENSE.md).
