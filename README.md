@@ -79,7 +79,6 @@ import { inject as service } from '@ember/service';
 export default class CallbackRoute extends Route {
   @service session;
 
-  queryParams = ['code'];
   beforeModel() {
     // redirect to index if already authenticated
     this.session.prohibitAuthentication('index');
@@ -88,6 +87,15 @@ export default class CallbackRoute extends Route {
   async model(params) {
     this.session.authenticate('authenticator:acm-idm', params.code);
   }
+}
+```
+
+```js
+// /app/controllers/callback.js
+import Controller from '@ember/controller';
+
+export default class CallbackController extends Controller {
+  queryParams = ['code'];
 }
 ```
 
