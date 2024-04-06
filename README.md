@@ -189,6 +189,7 @@ Next, set up a route `authentication.switch` which will redirect the user to the
 import Route from '@ember/routing/route';
 import { service } from '@ember/service';
 import ENV from 'your-app/config/environment';
+import buildSwitchUrlFromConfig from '@lblod/ember-acmidm-login/utils/build-switch-url-from-config';
 
 export default class AuthenticationSwitchRoute extends Route {
   @service router;
@@ -200,23 +201,12 @@ export default class AuthenticationSwitchRoute extends Route {
 
     try {
       await this.session.invalidate();
-      const switchURL = buildSwitchUrl(ENV.acmidm);
+      const switchURL = buildSwitchUrlFromConfig(ENV.acmidm);
       window.location.replace(switchURL);
     } catch (error) {
       // Handle error
     }
   }
-}
-
-function buildSwitchUrl({ logoutUrl, clientId, switchRedirectUrl }) {
-  let switchUrl = new URL(logoutUrl);
-  let searchParams = switchUrl.searchParams;
-
-  searchParams.append('switch', true);
-  searchParams.append('client_id', clientId);
-  searchParams.append('post_logout_redirect_uri', switchRedirectUrl);
-
-  return switchUrl.href;
 }
 ```
 
