@@ -22,9 +22,9 @@ module.exports = function (environment) {
   const ENV = {
     ...,
     acmidm: {
-      apiKey: 'your-client-id',
+      clientId: 'your-client-id',
       baseUrl: 'https://authenticatie.vlaanderen.be/op/v1/auth',
-      redirectUri: 'https://myapp.vlaanderen.be/authorization/callback',
+      redirectUrl: 'https://myapp.vlaanderen.be/authorization/callback',
       logoutUrl: 'https://authenticatie.vlaanderen.be/op/v1/logout',
       scope: 'openid vo profile'
     }
@@ -208,12 +208,12 @@ export default class AuthenticationSwitchRoute extends Route {
   }
 }
 
-function buildSwitchUrl({ logoutUrl, apiKey, switchRedirectUrl }) {
+function buildSwitchUrl({ logoutUrl, clientId, switchRedirectUrl }) {
   let switchUrl = new URL(logoutUrl);
   let searchParams = switchUrl.searchParams;
 
   searchParams.append('switch', true);
-  searchParams.append('client_id', apiKey);
+  searchParams.append('client_id', clientId);
   searchParams.append('post_logout_redirect_uri', switchRedirectUrl);
 
   return switchUrl.href;
@@ -231,11 +231,11 @@ The following options can be configured via the `ENV.acmidm` object in `config/e
 
 The following options are required: 
 - `baseUrl`: ACM/IDM auth endpoint, typically https://authenticatie.vlaanderen.be/op/v1/auth
-- `apiKey`: the client ID of this application (naming of the attribute is historic)
-- `redirectUri`: URL of the page ACM/IDM needs to redirect to after authentication. You'll need to set up a route to capture this. E.g. https://myapp.vlaanderen.be/authorization/callback
+- `clientId`: the client ID of this application
+- `redirectUrl`: URL of the page ACM/IDM needs to redirect to after authentication. You'll need to set up a route to capture this. E.g. https://myapp.vlaanderen.be/authorization/callback
 - `scope`: Space-separated string of scopes ACM/IDM must grant access for. E.g. `'openid vo profile'`
 
 The following options can be optionally provided:
 - `logoutUrl`: ACM/IDM logout endpoint, typically https://authenticatie.vlaanderen.be/op/v1/logout
-- `switchRedirectUrl`: URL of the page ACM/IDM needs to redirect to after switching. You'll need to set up a route to capture this. Typically the same value as for `redirectUri` can be used.
+- `switchRedirectUrl`: URL of the page ACM/IDM needs to redirect to after switching. You'll need to set up a route to capture this. Typically the same value as for `redirectUrl` can be used.
 
