@@ -2,7 +2,7 @@
   "name": "@lblod/ember-acmidm-login",
   "version": "2.1.0",
   "private": true,
-  "repository": "",
+  "repository": "github:lblod/ember-acmidm-login",
   "license": "MIT",
   "author": "",
   "scripts": {

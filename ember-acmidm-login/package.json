@@ -5,7 +5,7 @@
   "keywords": [
     "ember-addon"
   ],
-  "repository": "",
+  "repository": "github:lblod/ember-acmidm-login",
   "license": "MIT",
   "author": "",
   "files": [
