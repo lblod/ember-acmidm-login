@@ -28,7 +28,7 @@
     "@embroider/addon-shim": "^1.0.0"
   },
   "peerDependencies": {
-    "ember-simple-auth": "4.x || 5.x || 6.x || 7.x"
+    "ember-simple-auth": ">= 4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.0",
