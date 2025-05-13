@@ -1,4 +1,4 @@
-pipeline:
+steps:
   install:
     image: danlynn/ember-cli:4.4.0
     commands:
@@ -11,4 +11,4 @@ pipeline:
       folder: ember-acmidm-login
 when:
   event: tag
-  tag: v*
+  ref: refs/tags/v*
