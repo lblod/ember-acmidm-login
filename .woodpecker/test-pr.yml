@@ -14,7 +14,7 @@ steps:
   test:
     image: danlynn/ember-cli:4.4.0
     commands:
-      - npm run test || exit 0
+      - npm run test
 when:
   event:
     - pull_request
