@@ -1,6 +1,6 @@
 {
   "name": "test-app",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": true,
   "description": "Small description for test-app goes here",
   "repository": "",
@@ -34,7 +34,7 @@
     "@embroider/test-setup": "^1.7.1",
     "@glimmer/component": "^1.1.2",
     "@glimmer/tracking": "^1.1.2",
-    "@lblod/ember-acmidm-login": "^2.2.0",
+    "@lblod/ember-acmidm-login": "^2.3.0",
     "broccoli-asset-rev": "^3.0.0",
     "concurrently": "^8.2.2",
     "ember-auto-import": "^2.8.1",
